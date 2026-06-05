@@ -5,7 +5,6 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-import ScrollProcessSection from "@/components/ScrollProcessSection";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -414,7 +413,7 @@ export default function LandingPage() {
           </div>
         </section>
         <div id="comment-ca-marche">
-          <ScrollProcessSection />
+          <HowItWorks />
         </div>
       </>
     );
