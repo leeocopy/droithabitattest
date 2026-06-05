@@ -247,23 +247,13 @@ export default function LandingPage() {
   useGSAP(() => {
     if (phase === "hero") {
       const ctx = gsap.context(() => {
-        const tl = gsap.timeline();
-        // Split text reveal - each word slides up
-        tl.from(".word", {
-          y: 40,
+        gsap.from(".hero-animate", {
           opacity: 0,
-          duration: 0.8,
-          ease: "power3.out",
-          stagger: 0.08,
-        });
-        // Badge, description, buttons fade in after title
-        tl.from(".hero-animate", {
-          opacity: 0,
-          y: 20,
+          y: 30,
           duration: 0.9,
           ease: "power3.out",
-          stagger: 0.1,
-        }, "-=0.4");
+          stagger: 0.12,
+        });
       }, sectionRef);
       return () => ctx.revert();
     }
@@ -363,7 +353,7 @@ export default function LandingPage() {
               {/* Headline with liquid gradient text effect */}
               <div
                 ref={titleRef}
-                className="relative inline-block"
+                className="hero-animate relative inline-block"
                 onMouseMove={handleTitleMouseMove}
                 style={{
                   '--x1': '0px',
@@ -390,13 +380,13 @@ export default function LandingPage() {
                   }}
                 >
                   <span className="flex flex-wrap justify-center items-center gap-x-3 md:gap-x-4">
-                    <span className="word inline-block">Votre</span>
-                    <span className="word inline-block font-bold">crédit</span>
-                    <span className="word inline-block">conso</span>
+                    Votre
+                    <span className="font-bold">crédit</span>
+                    <span>conso</span>
                   </span>
                   <span className="flex flex-wrap justify-center items-center gap-x-3 md:gap-x-4">
-                    <span className="word inline-block">vous</span>
-                    <span className="word inline-block font-bold">pèse ?</span>
+                    vous
+                    <span className="font-bold">pèse ?</span>
                   </span>
                 </h1>
               </div>
