@@ -1,26 +1,59 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-background-main: #FFFFFF;
+  --color-background-muted: #F8F9FA;
+  --color-surface-glass: rgba(255, 255, 255, 0.65);
+  --color-surface-dark: #2A3F5E;
+  --color-surface-card-hover: rgba(255, 255, 255, 0.85);
+  --color-text-primary: #22324B;
+  --color-text-body: #54657E;
+  --color-text-light: #CFD1D4;
+  --color-text-white: #FFFFFF;
+  --color-accent-green: #50D995;
+  --color-accent-green-strong: #26D07C;
+  --color-accent-red: #4B2223;
+  --color-accent-red-muted: #7E5455;
+  --color-accent-slate: #ADB3BA;
+
+  --font-raleway: "Raleway", sans-serif;
+
+  --animate-fluid-slow: fluid-slow 12s ease-in-out infinite;
+  --animate-fluid-delayed: fluid-delayed 14s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes fluid-slow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(5vw, 8vh) scale(1.05);
+  }
+  66% {
+    transform: translate(-3vw, -5vh) scale(0.95);
   }
 }
 
+@keyframes fluid-delayed {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-6vw, 4vh) scale(1.08);
+  }
+  66% {
+    transform: translate(4vw, -7vh) scale(0.92);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background-main);
+  color: var(--color-text-primary);
+  font-family: var(--font-raleway);
 }
