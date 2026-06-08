@@ -24,20 +24,6 @@ const offers = [
     ],
     popular: false,
   },
-  {
-    id: "mediation",
-    name: "Médiation",
-    price: 199,
-    description: "Rapport + Médiation amiable. Droit Habitat prend le relais.",
-    features: [
-      "Tout inclus dans le Diagnostic",
-      "Mise en demeure recommandée",
-      "Négociation amiable",
-      "Suivi étape par étape",
-      "Conciliation avec la partie prenante",
-    ],
-    popular: true,
-  },
 ];
 
 export default function OffresPage() {
@@ -80,7 +66,7 @@ export default function OffresPage() {
 
         <section ref={ref} className="pb-24 md:pb-32">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+            <div className="grid grid-cols-1 md:max-w-xl md:mx-auto gap-8 lg:gap-10">
               {offers.map((offer) => (
                 <div
                   key={offer.id}

@@ -22,59 +22,19 @@ export default function SolutionSection({ onStartForm, onStartChat, children }: 
             Notre test gratuit analyse instantanément votre dossier et vous dit si vous pouvez récupérer vos droits. Gratuit, sans engagement, 100% en ligne.
           </p>
 
-          {/* Boutons et Flèches */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-6">
-            
-            {/* Flèche gauche */}
-            <div className="hidden sm:flex animate-bounce-x-right">
-              <svg className="w-8 h-8 text-accent-greenStrong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              {onStartForm ? (
-                <button
-                  onClick={onStartForm}
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg md:text-xl rounded-full bg-accent-green text-text-primary font-extrabold shadow-xl shadow-accent-green/30 transition-all duration-300 hover:bg-accent-greenStrong hover:scale-105 hover:-translate-y-1"
-                >
-                  Test classique
-                  <svg className="ml-3 w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </button>
-              ) : (
-                <Link
-                  href="/onboarding"
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg md:text-xl rounded-full bg-accent-green text-text-primary font-extrabold shadow-xl shadow-accent-green/30 transition-all duration-300 hover:bg-accent-greenStrong hover:scale-105 hover:-translate-y-1"
-                >
-                  Test classique
-                  <svg className="ml-3 w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </Link>
-              )}
-
-              {onStartChat && (
-                <button
-                  onClick={onStartChat}
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg md:text-xl rounded-full bg-white border-2 border-accent-green text-accent-greenStrong font-extrabold shadow-xl shadow-accent-green/10 transition-all duration-300 hover:bg-accent-green/10 hover:scale-105 hover:-translate-y-1"
-                >
-                  Test interactif
-                  <svg className="ml-3 w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {/* Flèche droite */}
-            <div className="hidden sm:flex animate-bounce-x-left">
-              <svg className="w-8 h-8 text-accent-greenStrong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </div>
-
+          {/* Bouton */}
+          <div className="flex justify-center mt-6">
+            {onStartChat && (
+              <button
+                onClick={onStartChat}
+                className="inline-flex items-center justify-center px-8 py-4 text-lg md:text-xl rounded-full bg-white border-2 border-accent-green text-accent-greenStrong font-extrabold shadow-xl shadow-accent-green/10 transition-all duration-300 hover:bg-accent-green/10 hover:scale-105 hover:-translate-y-1"
+              >
+                Test interactif
+                <svg className="ml-3 w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
         {children}

@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ProcessusDarkSection from "./ProcessusDarkSection";
 import SolutionSection from "./SolutionSection";
 import TestimonialsSection from "./TestimonialsSection";
@@ -110,6 +111,8 @@ export default function LandingPage() {
 
   // Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const router = useRouter();
 
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
@@ -300,9 +303,13 @@ export default function LandingPage() {
                     setPhase("analysing");
                     setTimeout(() => {
                       const s = computeScore(data);
-                      setScore(s);
-                      setResult(s >= 5 ? "éligible" : "not-éligible");
-                      setPhase("result");
+                      if (s >= 5) {
+                        router.push("/offres");
+                      } else {
+                        setScore(s);
+                        setResult("not-éligible");
+                        setPhase("result");
+                      }
                     }, 2000);
                   }}
                   onClose={() => {
