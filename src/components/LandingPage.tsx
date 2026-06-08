@@ -217,7 +217,7 @@ export default function LandingPage() {
   if (phase === "hero") {
     return (
       <>
-        <section ref={sectionRef} className="relative min-h-[100dvh] flex items-center overflow-hidden z-0">
+        <section ref={sectionRef} className="fixed inset-0 z-0 h-[100dvh] flex items-center overflow-hidden">
           {/* Background Image */}
           <div className="hero-bg absolute inset-0">
             <img
@@ -277,8 +277,10 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <SolutionSection onStartForm={() => setPhase("form")} />
-        <div id="comment-ca-marche">
+        <div className="relative z-10 mt-[100dvh] bg-background-main shadow-[0_-20px_60px_rgba(34,50,75,0.2)] rounded-t-[2rem]">
+          <SolutionSection onStartForm={() => setPhase("form")} />
+        </div>
+        <div id="comment-ca-marche" className="relative z-10">
           <ProcessusDarkSection />
         </div>
       </>
