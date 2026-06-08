@@ -48,34 +48,34 @@ export default function FAQSection() {
   }, { scope: ref });
 
   return (
-    <section ref={ref} className="py-16 md:py-24 bg-background-main">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
+    <section ref={ref} className="py-20 md:py-32 bg-background-muted">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16 md:mb-20">
           <h2 className="text-4xl md:text-5xl xl:text-6xl font-semibold tracking-tight text-text-primary">
-            Questions fréquentes
+            Questions <span className="text-accent-greenStrong">fréquentes</span>
           </h2>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-0">
           {faqs.map((faq, i) => (
             <div
               key={i}
-              className="faq-item rounded-2xl border border-accent-slate/80 bg-white overflow-hidden"
+              className="faq-item border-b border-accent-slate/20 overflow-hidden"
             >
               <button
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                className="w-full flex items-center justify-between p-5 text-left"
+                className="w-full flex items-center justify-between py-6 text-left group"
               >
-                <span className="font-semibold text-text-primary text-sm md:text-base pr-4">
+                <span className="font-semibold text-text-primary text-base md:text-lg pr-4 group-hover:text-accent-greenStrong transition-colors">
                   {faq.q}
                 </span>
                 <ChevronDown
-                  className={`w-5 h-5 text-text-light shrink-0 transition-transform duration-300 ${
+                  className={`w-5 h-5 text-accent-greenStrong shrink-0 transition-transform duration-300 ${
                     openIdx === i ? "rotate-180" : ""
                   }`}
                 />
               </button>
               {openIdx === i && (
-                <div className="px-5 pb-5 text-text-body text-sm leading-relaxed">
+                <div className="pb-6 text-text-body text-base leading-relaxed pr-8">
                   {faq.a}
                 </div>
               )}

@@ -32,15 +32,7 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Espace Client Links */}
-        <div className="hidden md:flex items-center gap-4 border-r border-accent-slate/20 pr-5">
-          <Link href="/auth/login" className="text-sm font-semibold text-text-primary hover:text-accent-green transition-colors">
-            Connexion
-          </Link>
-          <Link href="/auth/register" className="text-sm font-bold text-text-primary bg-accent-green/10 px-4 py-2 rounded-full border border-accent-green/20 hover:bg-accent-green hover:text-white transition-all">
-            S'inscrire
-          </Link>
-        </div>
+
 
         {/* Grid Icon Button */}
         <button

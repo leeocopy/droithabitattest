@@ -7,6 +7,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import ProcessusDarkSection from "./ProcessusDarkSection";
 import SolutionSection from "./SolutionSection";
+import TestimonialsSection from "./TestimonialsSection";
+import FAQSection from "./FAQSection";
+import CTASection from "./CTASection";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -74,6 +77,25 @@ const STEPS: QuizStep[] = [
 
 const ALL_QUESTIONS: QuizQuestion[] = STEPS.flatMap((s) => s.questions || []);
 
+const CHAT_QUESTIONS = [
+  { id: "montant", text: "Quel est le montant total de votre crédit en euros ?", type: "number", placeholder: "Ex: 15000" },
+  { id: "nb_crédits", text: "Combien de crédits conso litigieux avez-vous ?", type: "select", options: ["1 crédit", "2 crédits", "3 crédits ou plus"], values: ["1", "2", "3"] },
+  { id: "demarcheur", text: "Un intermédiaire ou démarcheur était-il présent lors de la vente ?", type: "boolean" },
+  { id: "domicile", text: "Le contrat a-t-il été signé chez vous (à domicile) ?", type: "boolean" },
+  { id: "retractation", text: "Ont-ils respecté le délai de rétractation ?", type: "boolean" },
+  { id: "prelevements", text: "Les prélèvements ont-ils déjà commencé ?", type: "boolean" },
+  { id: "relance", text: "Avez-vous déjà reçu des courriers de relance ?", type: "boolean" },
+  { id: "mise_en_demeure", text: "Avez-vous reçu une mise en demeure ?", type: "boolean" },
+  { id: "ficp", text: "Êtes-vous menacé(e) de fichage Banque de France (FICP) ou avez-vous déjà été fiché(e) ?", type: "boolean" },
+  { id: "retard", text: "Êtes-vous en retard de paiement actuellement ?", type: "boolean" },
+  { id: "solvabilite", text: "L'organisme a-t-il vérifié votre solvabilité réelle ?", type: "boolean" },
+  { id: "revenus_charges", text: "A-t-il vérifié vos revenus et vos charges ?", type: "boolean" },
+  { id: "info_claire", text: "Y a-t-il des absences d'information claire (coût total, taux, risques) ?", type: "boolean" },
+  { id: "justificatifs", text: "A-t-il vérifié tous les éléments sans exception (justificatifs, situation pro, charges, relevés) ?", type: "boolean" },
+  { id: "ficp_consulte", text: "L'organisme a-t-il consulté le FICP et vérifié vos crédits en cours ?", type: "boolean" },
+  { id: "antecedents", text: "L'organisme avait-il connaissance de vos antécédents de fichage ou incidents bancaires ?", type: "boolean" },
+];
+
 function computeScore(data: Record<string, string>): number {
   let score = 0;
   if (Number(data.montant) > 5000) score += 1;
@@ -96,7 +118,7 @@ function computeScore(data: Record<string, string>): number {
 /* ──────────────── MAIN ──────────────── */
 
 export default function LandingPage() {
-  const [phase, setPhase] = useState<"hero" | "form" | "analysing" | "result">("hero");
+  const [phase, setPhase] = useState<"hero" | "form" | "chat" | "analysing" | "result">("hero");
   const [stepIndex, setStepIndex] = useState(0);
   const [formData, setFormData] = useState<Record<string, string>>({ montant: "", "nb_crédits": "1" });
   const [score, setScore] = useState(0);
@@ -104,11 +126,18 @@ export default function LandingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showGradient, setShowGradient] = useState(false);
 
+  // Chat State
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{sender: "bot"|"user", text: string}[]>([]);
+  const [chatIndex, setChatIndex] = useState(0);
+  const [chatInputValue, setChatInputValue] = useState("");
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    if (phase === "hero") {
+    if (phase === "hero" && !isChatOpen) {
       const ctx = gsap.context(() => {
         const tl = gsap.timeline();
 
@@ -142,7 +171,7 @@ export default function LandingPage() {
       }, sectionRef);
       return () => ctx.revert();
     }
-  }, { scope: sectionRef, dependencies: [phase] });
+  }, { scope: sectionRef, dependencies: [phase] }); // We specifically don't want to re-run when isChatOpen changes
 
   const updateField = useCallback((name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -184,10 +213,71 @@ export default function LandingPage() {
   const restart = useCallback(() => {
     setPhase("hero");
     setStepIndex(0);
+    setChatIndex(0);
+    setIsChatOpen(false);
+    setChatMessages([]);
     setFormData({ montant: "", "nb_crédits": "1" });
     setScore(0);
     setIsSubmitting(false);
   }, []);
+
+  const startChat = useCallback(() => {
+    setIsChatOpen(true);
+    setChatMessages([{ sender: "bot", text: CHAT_QUESTIONS[0].text }]);
+    setChatIndex(0);
+    setChatInputValue("");
+    setFormData({ "nb_crédits": "1" }); // Reset with defaults
+  }, []);
+
+  const handleChatAnswer = useCallback((val: string, displayVal: string) => {
+    if (!val.trim()) return;
+
+    const q = CHAT_QUESTIONS[chatIndex];
+    const newFormData = { ...formData, [q.id]: val };
+    setFormData(newFormData);
+    setChatInputValue("");
+    
+    // Add user answer
+    setChatMessages(prev => [
+      ...prev, 
+      { sender: "user", text: displayVal }
+    ]);
+
+    const nextIndex = chatIndex + 1;
+    if (nextIndex < CHAT_QUESTIONS.length) {
+      setTimeout(() => {
+        setChatMessages(prev => [
+          ...prev,
+          { sender: "bot", text: CHAT_QUESTIONS[nextIndex].text }
+        ]);
+        setChatIndex(nextIndex);
+      }, 600); // Small delay to feel natural
+    } else {
+      setTimeout(() => {
+        setIsChatOpen(false);
+        setPhase("analysing");
+        setTimeout(() => {
+          const s = computeScore(newFormData);
+          setScore(s);
+          setResult(s >= 5 ? "éligible" : "not-éligible");
+          setPhase("result");
+        }, 2000);
+      }, 800);
+    }
+  }, [chatIndex, formData]);
+
+  const handleChatSubmitNumber = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInputValue) return;
+    handleChatAnswer(chatInputValue, chatInputValue + " €");
+  }, [chatInputValue, handleChatAnswer]);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (isChatOpen && chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages, isChatOpen]);
 
   const handleTitleMouseMove = useCallback((evt: React.MouseEvent<HTMLDivElement>) => {
     const rect = evt.currentTarget.getBoundingClientRect();
@@ -278,11 +368,117 @@ export default function LandingPage() {
           </div>
         </section>
         <div className="relative z-10 mt-[100dvh] bg-background-main shadow-[0_-20px_60px_rgba(34,50,75,0.2)] rounded-t-[2rem]">
-          <SolutionSection onStartForm={() => setPhase("form")} />
+          <SolutionSection onStartForm={() => setPhase("form")} onStartChat={startChat} />
         </div>
         <div id="comment-ca-marche" className="relative z-10">
           <ProcessusDarkSection />
         </div>
+        <div className="relative z-10 bg-background-main">
+          <TestimonialsSection />
+          <FAQSection />
+          <CTASection />
+        </div>
+
+        {/* CHAT MODAL */}
+        {isChatOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
+            <div className="bg-background-muted rounded-3xl w-full max-w-md h-[600px] max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-accent-slate to-surface-dark text-white p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-accent-green flex items-center justify-center font-bold text-lg">
+                    D
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base leading-tight">Assistant DroitHabitat</h3>
+                    <p className="text-xs text-white/80">Nous répondons instantanément</p>
+                  </div>
+                </div>
+                <button onClick={() => setIsChatOpen(false)} className="text-white hover:opacity-75 transition-opacity p-2">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+
+              {/* Messages Area */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {chatMessages.map((msg, idx) => (
+                  <div key={idx} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+                    <div className={`max-w-[85%] px-4 py-3 text-sm leading-relaxed shadow-sm ${
+                      msg.sender === "user" 
+                        ? "bg-accent-green text-text-primary rounded-2xl rounded-tr-sm font-medium" 
+                        : "bg-white text-text-primary border border-accent-slate/15 rounded-2xl rounded-tl-sm"
+                    }`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                <div ref={chatEndRef} />
+              </div>
+
+              {/* Input Area */}
+              <div className="flex-none p-4 bg-white border-t border-accent-slate/15">
+                {CHAT_QUESTIONS[chatIndex]?.type === "number" && (
+                  <form onSubmit={handleChatSubmitNumber} className="flex gap-2">
+                    <input
+                      type="number"
+                      value={chatInputValue}
+                      onChange={(e) => setChatInputValue(e.target.value)}
+                      placeholder={CHAT_QUESTIONS[chatIndex].placeholder || "Votre réponse..."}
+                      className="flex-1 bg-background-muted rounded-full px-4 py-3 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-green/50 transition-all"
+                      autoFocus
+                    />
+                    <button
+                      type="submit"
+                      disabled={!chatInputValue}
+                      className="w-11 h-11 rounded-full bg-accent-green text-white flex items-center justify-center shadow-md shadow-accent-green/20 disabled:opacity-50 transition-all hover:bg-accent-greenStrong"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    </button>
+                  </form>
+                )}
+
+                {CHAT_QUESTIONS[chatIndex]?.type === "select" && (
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {CHAT_QUESTIONS[chatIndex].options?.map((opt, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleChatAnswer(CHAT_QUESTIONS[chatIndex].values![i], opt)}
+                        className="px-4 py-2 rounded-full border border-accent-slate/20 text-sm text-text-primary font-medium hover:border-accent-green hover:bg-accent-green/10 hover:text-accent-greenStrong transition-all"
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {CHAT_QUESTIONS[chatIndex]?.type === "boolean" && (
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={() => handleChatAnswer("oui", "Oui")}
+                      className="flex-1 max-w-[120px] px-4 py-2.5 rounded-full border border-accent-slate/20 text-sm text-text-primary font-medium hover:border-accent-green hover:bg-accent-green/10 hover:text-accent-greenStrong transition-all text-center"
+                    >
+                      Oui
+                    </button>
+                    <button
+                      onClick={() => handleChatAnswer("non", "Non")}
+                      className="flex-1 max-w-[120px] px-4 py-2.5 rounded-full border border-accent-slate/20 text-sm text-text-primary font-medium hover:border-accent-green hover:bg-accent-green/10 hover:text-accent-greenStrong transition-all text-center"
+                    >
+                      Non
+                    </button>
+                  </div>
+                )}
+
+                {!CHAT_QUESTIONS[chatIndex] && (
+                  <div className="flex gap-2 items-center justify-center py-2 text-text-body">
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent-green animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent-green animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent-green animate-bounce" style={{ animationDelay: "300ms" }} />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </>
     );
   }
@@ -378,6 +574,8 @@ export default function LandingPage() {
       </section>
     );
   }
+
+
 
   /* ── ANALYSING ── */
   if (phase === "analysing") {
